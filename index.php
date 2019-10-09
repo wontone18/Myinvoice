@@ -1,5 +1,9 @@
 <?php
 
+require ('class/tables.php');
+require ('class/template.php');
+require ('vendor/autoload.php');
+
 /** config classes */
 $tables=new tables();
 /** end of config classes */
@@ -8,7 +12,12 @@ $tables=new tables();
 $menutype=new template();
 
 /** Page to open */
+if(isset($_REQUEST['action'])):
 $action=$_REQUEST['action'];
+else:
+$action="login";
+endif;
+
 
 
 /**CSRF protection */
@@ -46,12 +55,33 @@ $path="template/page/".$action.".phtml";
 // open page
 if(file_exists($path)){
 	// Top file
+   
+    // cache the files
+    $top = fopen("template/top.phtml", "r") or die("Unable to open file!");
+    $footer = fopen("template/footer.phtml", "r") or die("Unable to open file!");
+    if (is_null($CachedString->get())) {
+        $CachedString->set($top.$footer)->expiresAfter(60);
+        $InstanceCache->save($CachedString);
+      // echo "FIRST LOAD // WROTE OBJECT TO CACHE // RELOAD THE PAGE AND SEE // ";
+        //echo $CachedString->get();
+        // close the files
+        fclose($top);
+        fclose($footer);
+      }
+      else{
+      //echo "READ FROM CACHE // ";
+       //echo $CachedString->get();
+        // close the files
+        fclose($top);
+        fclose($footer);
+        }
+        /////////////
+
     include("template/top.phtml");
     include("template/header.phtml");
     include("template/menu.phtml");
     include($path);
     include("template/footer.phtml");
-
 }
 else{
 
