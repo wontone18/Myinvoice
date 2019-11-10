@@ -4,12 +4,13 @@ require ('class/tables.php');
 require ('class/template.php');
 require ('vendor/autoload.php');
 
+
 /** config classes */
 $tables=new tables();
 /** end of config classes */
 
 /**Template class */
-$menutype=new template();
+$template=new template();
 
 /** Page to open */
 if(isset($_REQUEST['action'])):
@@ -54,11 +55,16 @@ $path="template/page/".$action.".phtml";
 
 // open page
 if(file_exists($path)){
+
+  // Page level js and css
+  $js=$template->loadjs($action);
+  $css=$template->loadcss($action);
 	// Top file
    
     // cache the files
     $top = fopen("template/top.phtml", "r") or die("Unable to open file!");
     $footer = fopen("template/footer.phtml", "r") or die("Unable to open file!");
+    
     if (is_null($CachedString->get())) {
         $CachedString->set($top.$footer)->expiresAfter(60);
         $InstanceCache->save($CachedString);
